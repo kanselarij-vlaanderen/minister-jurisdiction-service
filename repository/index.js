@@ -1,7 +1,6 @@
 import mu from 'mu';
-import { querySudo, updateSudo } from '@lblod/mu-auth-sudo';
-mu.query = querySudo;
-mu.update = updateSudo;
+
+const targetGraph = "${targetGraph}";
 
 const getMinisters = async () => {
 
@@ -17,7 +16,7 @@ const getMinisters = async () => {
 
             SELECT *
             WHERE {
-                GRAPH <http://mu.semte.ch/application> {
+                GRAPH <${targetGraph}> {
                     ?mandatee a mandaat:Mandataris ;
                     dct:title ?title ;
                     mandaat:isBestuurlijkeAliasVan ?person .
@@ -44,7 +43,7 @@ const getMinistersForDomain = async () => {
 
         SELECT *
         WHERE {
-            GRAPH <http://mu.semte.ch/application> {
+            GRAPH <${targetGraph}> {
                 ?domain a ext:BeleidsdomeinCode ;
                 skos:prefLabel ?label ;
                 skos:scopeNote ?note .
@@ -65,7 +64,7 @@ const getMandateeForDomain = async (domain) => {
 
         SELECT *
         WHERE {{
-            GRAPH <http://mu.semte.ch/application> {{
+            GRAPH <${targetGraph}> {{
                 ?mandatee mandaat:beleidsdomein <${domain}> .
                 ?mandatee mandaat:isBestuurlijkeAliasVan ?person .
                 ?person foaf:familyName ?familyName ;
@@ -82,12 +81,12 @@ const getDomainsForMandatee = async (mandatee) => {
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
     
         SELECT *
-        WHERE {{
-            GRAPH <http://mu.semte.ch/application> {{
+        WHERE {
+            GRAPH <${targetGraph}> {
                 <${mandatee}> mandaat:beleidsdomein ?domain .
                 ?domain skos:prefLabel ?label
-            }}
-        }}`;
+            }
+        }`;
     let data = await mu.query(query);
     return parseSparqlResults(data);
 };
@@ -102,7 +101,7 @@ const getUniqueSubCaseWhereOpenByMandatee = async (mandatee) => {
         PREFIX mu: <http://mu.semte.ch/vocabularies/core/>
 
         SELECT * WHERE {
-           GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {
+           GRAPH <${targetGraph}> {
               ?uri besluitvorming:heeftBevoegde <http://kanselarij.vo.data.gift/id/mandatarissen/${mandatee}> . 
               ?uri besluitvorming:besloten "false"^^<http://mu.semte.ch/vocabularies/typed-literals/boolean> .
            }
@@ -117,13 +116,13 @@ const setMandateeOnDomain = async (receiving_mandatee, domain) => {
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
         DELETE WHERE {{
-            GRAPH <http://mu.semte.ch/application> {{
+            GRAPH <${targetGraph}> {{
                 ?mandatee mandaat:beleidsdomein <${domain}> .
             }}
         }}
 
         INSERT DATA {{
-            GRAPH <http://mu.semte.ch/application> {{
+            GRAPH <${targetGraph}> {{
                 <${receiving_mandatee}> mandaat:beleidsdomein <${domain}> .
             }}
         }}`;
@@ -136,13 +135,13 @@ const addMandateeToSubCase = async (receiving_mandatee, domain) => {
         PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
 
         DELETE WHERE {{
-            GRAPH <http://mu.semte.ch/application> {{
+            GRAPH <${targetGraph}> {{
                 ?mandatee mandaat:beleidsdomein <${domain}> .
             }}
         }}
 
         INSERT DATA {{
-            GRAPH <http://mu.semte.ch/application> {{
+            GRAPH <${targetGraph}> {{
                 <${receiving_mandatee}> mandaat:beleidsdomein <${domain}> .
             }}
         }}`;
@@ -157,13 +156,13 @@ const setMandateeOnSubCase = async (open_sub_cases, new_mandatee, old_mandatee) 
         PREFIX besluitvorming: <http://data.vlaanderen.be/ns/besluitvorming#>
 
         DELETE WHERE {
-            GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {
+            GRAPH <${targetGraph}> {
                 <${subcase.uri}> besluitvorming:heeftBevoegde <http://kanselarij.vo.data.gift/id/mandatarissen/${old_mandatee}> .
             }
         }
 
         INSERT {
-             GRAPH <http://mu.semte.ch/graphs/organizations/kanselarij> {
+             GRAPH <${targetGraph}> {
                    <${subcase.uri}> besluitvorming:heeftBevoegde <http://kanselarij.vo.data.gift/id/mandatarissen/${new_mandatee}> .
             }
         }`).catch(err => { console.error(err) });
