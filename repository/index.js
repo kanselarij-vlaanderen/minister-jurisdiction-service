@@ -1,6 +1,6 @@
 import mu from 'mu';
 
-const targetGraph = "${targetGraph}";
+const targetGraph = "http://mu.semte.ch/graphs/organizations/kanselarij";
 
 const getMinisters = async () => {
 
@@ -196,7 +196,3 @@ module.exports = {
     getUniqueSubCaseWhereOpenByMandatee,
     setMandateeOnSubCase
 };
-
-
-
-
