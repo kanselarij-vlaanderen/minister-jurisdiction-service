@@ -1,6 +1,6 @@
 import mu from 'mu';
 
-const targetGraph = "http://mu.semte.ch/graphs/organizations/kanselarij";
+const targetGraph = "${targetGraph}";
 
 const getMinisters = async () => {
 
