@@ -1,6 +1,6 @@
 import mu from 'mu';
 
-const targetGraph = "${targetGraph}";
+const targetGraph = `${targetGraph}`;
 
 const getMinisters = async () => {
 
